@@ -27,7 +27,7 @@ const ProjectModal = ({ id, onClose, onSave, userRole }: ProjectModalProps) => {
           status: json.data.status || "development",
         });
       } catch (err) {
-        console.error("Failed to fetch company detail", err);
+        console.error("Failed to fetch project detail", err);
       }
     };
     fetchBasicData();

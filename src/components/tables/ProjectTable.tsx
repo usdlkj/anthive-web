@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import axios from 'axios';
 import Cookies from 'js-cookie';
-import { Pencil, Trash2, PlusCircle } from 'lucide-react';
+import { Pencil, Trash2, PlusCircle, BookOpen } from 'lucide-react';
 import { BackofficeDataTable } from "@/components/tables/BackofficeDataTable";
 import { ColumnDef } from "@tanstack/react-table";
 import { useRouter } from 'next/navigation';
@@ -37,6 +37,10 @@ export default function ProjectTable({ initialData, userRole }: Props) {
       accessorKey: 'projectCode',
     },
     {
+      header: 'Status',
+      accessorKey: 'status',
+    },
+    {
       header: 'Actions',
       cell: ({ row }) => (
         <div>
@@ -48,6 +52,14 @@ export default function ProjectTable({ initialData, userRole }: Props) {
             className="text-blue-500 hover:text-blue-700 p-2 border rounded border-gray-200 mr-2"
           >
             <Pencil className="w-4 h-4" />
+          </button>
+          <button
+            onClick={() => {
+              router.push(`/projects/${row.original.id}/fields`);
+            }}
+            className="text-blue-500 hover:text-blue-700 p-2 border rounded border-gray-200 mr-2"
+          >
+            <BookOpen className="w-4 h-4" />
           </button>
           <button
             onClick={() => handleDisable(row.original.id)}

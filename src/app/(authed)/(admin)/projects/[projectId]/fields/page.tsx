@@ -1,13 +1,13 @@
 import { cookies } from 'next/headers';
-import { DatatableProps } from '@/interfaces/DatatableProps';
 import axios from 'axios';
 import { getUserFromServerToken } from '@/lib/server/getUserFromToken';
 import ProjectTable from '@/components/tables/ProjectTable';
+import { DatatableProps } from '@/interfaces/DatatableProps';
 import Project from '@/interfaces/Project';
 
-async function fetchData() {
+async function fetchData(projectId: string) {
   const cookiesObject = await cookies();
-  const token = cookiesObject.get('sempoa')?.value; // Securely get the token from server cookies
+  const token = cookiesObject.get('sempoa')?.value;
 
   if (!token) {
     console.error('Missing authentication token');
@@ -15,16 +15,19 @@ async function fetchData() {
   }
 
   try {
-    const res = await axios.get(`${process.env.BACKEND_URL}/projects?currentPage=1&pageSize=10`, {
-      headers: {
-        Authorization: `Bearer ${token}`
+    const res = await axios.get(
+      `${process.env.BACKEND_URL}/project-fields?projectId=${projectId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       }
-    });
+    );
 
     const json: DatatableProps<Project, unknown> = res.data;
-    return { 
-      data: json.data, 
-      totalRows: json.recordsFiltered 
+    return {
+      data: json.data,
+      totalRows: json.recordsTotal // match backend return
     };
 
   } catch (error) {
@@ -33,14 +36,15 @@ async function fetchData() {
   }
 }
 
-export default async function Projects() {
-  const { data, totalRows } = await fetchData();
+export default async function ProjectFieldsPage({ params }: { params: { projectId: string } }) {
+  const { projectId } = params;
+  const { data, totalRows } = await fetchData(projectId);
   const user = await getUserFromServerToken();
   const role = user?.role ?? "USER";
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-kcicGray">
-      <h1 className="text-2xl font-bold mb-4 text-kcicBlack">Projects</h1>
+      <h1 className="text-2xl font-bold mb-4 text-kcicBlack">Project Fields</h1>
       <ProjectTable initialData={data} userRole={role} />
     </div>
   );
