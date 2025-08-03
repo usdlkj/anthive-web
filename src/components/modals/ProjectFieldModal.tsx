@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import ModalProps from "@/interfaces/ModalProps";
 import Cookies from "js-cookie";
 import ProjectField from "@/interfaces/ProjectField";
+import axios from "axios";
 
 interface ProjectFieldModalProps extends ModalProps {
   id: string;
@@ -20,29 +21,37 @@ const ProjectFieldModal = ({ id, onClose, onSave, userRole, projectId }: Project
     if (!id || !token) return;
     const fetchBasicData = async () => {
       try {
-        const res = await fetch(`/api/project-fields/${id}`, {
-          headers: { Authorization : `Bearer ${token}` }
+        const res = await axios.get(`/api/project-fields/${id}`, {
+          headers: { Authorization: `Bearer ${token}` },
         });
-        const json = await res.json();
+        const json = res.data;
         setFormData({
           ...json.data,
           status: json.data.status || "development",
         });
       } catch (err) {
-        console.error("Failed to fetch project detail", err);
+        console.error("Failed to fetch project field detail", err);
       }
     };
     fetchBasicData();
     // Fetch all fields for this project
     const fetchAllFields = async () => {
       try {
-        const res = await fetch(`/api/project-fields?projectId=${projectId}`, {
-          headers: { Authorization : `Bearer ${token}` }
+        const res = await axios.get(`/api/project-fields?projectId=${projectId}`, {
+          headers: { Authorization: `Bearer ${token}` },
         });
-        const json = await res.json();
-        setFields(json.data || []);
+
+        const raw = res.data;
+        const maybeArray = Array.isArray(raw?.data?.data)
+          ? raw.data.data
+          : Array.isArray(raw?.data)
+          ? raw.data
+          : [];
+
+        setFields(maybeArray);
       } catch (err) {
         console.error("Failed to fetch project fields list", err);
+        setFields([]);
       }
     };
     fetchAllFields();

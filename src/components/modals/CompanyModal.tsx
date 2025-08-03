@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import ModalProps from "@/interfaces/ModalProps";
 import Cookies from "js-cookie";
 import Company from "@/interfaces/Company";
+import axios from "axios";
 
 interface CompanyModalProps extends ModalProps {
   id: string;
@@ -18,10 +19,10 @@ const CompanyModal = ({ id, onClose, onSave, userRole }: CompanyModalProps) => {
     if (!id) return;
     const fetchBasicData = async () => {
       try {
-        const res = await fetch(`/api/companies/${id}`, {
-          headers: { Authorization : `Bearer ${token}` }
+        const res = await axios.get(`/api/companies/${id}`, {
+          headers: { Authorization: `Bearer ${token}` },
         });
-        const json = await res.json();
+        const json = res.data;
         setFormData({
           ...json.data,
           status: json.data.status || "development",

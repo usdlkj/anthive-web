@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import ModalProps from "@/interfaces/ModalProps";
 import Cookies from "js-cookie";
 import Project from "@/interfaces/Project";
+import axios from "axios";
 
 interface ProjectModalProps extends ModalProps {
   id: string;
@@ -18,10 +19,10 @@ const ProjectModal = ({ id, onClose, onSave, userRole }: ProjectModalProps) => {
     if (!id) return;
     const fetchBasicData = async () => {
       try {
-        const res = await fetch(`/api/projects/${id}`, {
-          headers: { Authorization : `Bearer ${token}` }
+        const res = await axios.get(`/api/projects/${id}`, {
+          headers: { Authorization: `Bearer ${token}` },
         });
-        const json = await res.json();
+        const json = res.data;
         setFormData({
           ...json.data,
           status: json.data.status || "development",
