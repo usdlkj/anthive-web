@@ -58,21 +58,25 @@ export default function ProjectFieldTable({ initialData, userRole, projectId }: 
       header: 'Actions',
       cell: ({ row }) => (
         <div>
-          <button
-            onClick={() => {
-              setModalData(row.original);
-              setIsModalOpen(true);
-            }}
-            className="text-blue-500 hover:text-blue-700 p-2 border rounded border-gray-200 mr-2"
-          >
-            <Pencil className="w-4 h-4" />
-          </button>
-          <button
-            onClick={() => handleDisable(row.original.id)}
-            className="text-red-500 hover:text-red-700 p-2 border rounded border-gray-200 mr-2"
-          >
-            <Trash2 className="w-4 h-4" />
-          </button>
+          {!row.original.isSystem && (
+            <>
+              <button
+                onClick={() => {
+                  setModalData(row.original);
+                  setIsModalOpen(true);
+                }}
+                className="text-blue-500 hover:text-blue-700 p-2 border rounded border-gray-200 mr-2"
+              >
+                <Pencil className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => handleDisable(row.original.id)}
+                className="text-red-500 hover:text-red-700 p-2 border rounded border-gray-200 mr-2"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+            </>
+          )}
         </div>
       ),
     },

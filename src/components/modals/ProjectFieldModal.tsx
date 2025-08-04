@@ -30,7 +30,7 @@ const ProjectFieldModal = ({ id, onClose, onSave, userRole, projectId }: Project
           status: res.data.status || "development",
         });
       } catch (err) {
-        console.error("Failed to fetch project detail", err);
+        console.error("Failed to fetch project field detail", err);
       }
     };
     fetchBasicData();
@@ -43,6 +43,7 @@ const ProjectFieldModal = ({ id, onClose, onSave, userRole, projectId }: Project
         setFields(res.data || []);
       } catch (err) {
         console.error("Failed to fetch project fields list", err);
+        setFields([]);
       }
     };
     fetchAllFields();

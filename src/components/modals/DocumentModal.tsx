@@ -1,70 +1,157 @@
-"use client";
+import { Dialog } from '@headlessui/react';
+import { useForm } from 'react-hook-form';
+import { useEffect } from 'react';
+import ProjectField from '@/interfaces/ProjectField';
+import { Document } from '@/interfaces/Document';
+import { Button } from '@/components/ui/button';
 
-import { useEffect, useState } from "react";
-import ModalProps from "@/interfaces/ModalProps";
-import Cookies from "js-cookie";
-import { Document } from "@/interfaces/Document";
-import axios from "axios";
-
-interface DocumentModalProps extends ModalProps {
-  id: string;
-  userRole: string; // Injected from parent
+interface DocumentModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSubmit: (data: any) => void;
+  projectFields: ProjectField[];
+  initialData?: Partial<Document>;
 }
 
-const DocumentModal = ({ id, onClose, onSave, userRole }: DocumentModalProps) => {
-  const [formData, setFormData] = useState<Partial<Document>>({});
-  const token = Cookies.get('sempoa');
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+export const DocumentModal: React.FC<DocumentModalProps> = ({
+  isOpen,
+  onClose,
+  onSubmit,
+  projectFields,
+  initialData = {},
+}) => {
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm();
 
   useEffect(() => {
-    if (!id) return;
-    const fetchBasicData = async () => {
-      try {
-        const res = await axios.get(`${backendUrl}/api/documents/${id}`, {
-          headers: { Authorization : `Bearer ${token}` }
-        });
-        setFormData({
-          ...res.data,
-          status: res.data.status || "development",
-        });
-      } catch (err) {
-        console.error("Failed to fetch document detail", err);
-      }
+    if (initialData) {
+      reset(initialData);
+    }
+  }, [initialData, reset]);
+
+  const handleFormSubmit = (formValues: any) => {
+    const documentField: Record<string, string> = {};
+    projectFields.forEach((field) => {
+      documentField[field.fieldCode] = formValues[field.fieldCode];
+    });
+
+    const payload = {
+      ...initialData,
+      ...formValues,
+      documentField,
     };
-    fetchBasicData();
-  }, [id]);
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const payload = { ...formData };
-    onSave(payload as Document);
+    onSubmit(payload);
+    onClose();
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white p-6 rounded shadow-lg w-8/12">
-        <h2 className="text-xl font-bold mb-4">{formData?.id ? "Edit" : "Create"} document</h2>
-        <form onSubmit={handleSubmit}>
-          {/* Buttons */}
-          <div className="flex justify-end">
-            <button type="button" onClick={onClose} className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 mr-2">
-              Cancel
-            </button>
-            <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-              Save
-            </button>
-          </div>
-        </form>
+    <Dialog open={isOpen} onClose={onClose} className="fixed z-50 inset-0 overflow-y-auto">
+      <div className="flex items-center justify-center min-h-screen px-4">
+        <Dialog.Panel className="bg-white p-6 rounded shadow-lg w-full max-w-lg space-y-4">
+          <Dialog.Title className="text-lg font-semibold">
+            {initialData?.id ? 'Edit Document' : 'Create Document'}
+          </Dialog.Title>
+
+          <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
+            {/* Doc Code is mandatory and typically shown */}
+            <div>
+              <label className="block font-medium mb-1">Document Code</label>
+              <input
+                {...register('docCode', { required: true })}
+                className="input w-full"
+                disabled={!!initialData?.id} // disable when editing
+              />
+              {errors.docCode && <span className="text-red-500 text-sm">Required</span>}
+            </div>
+
+            {/* Dynamic Project Fields */}
+            {projectFields
+              .filter((f) => f.fieldCode !== 'docCode') // docCode handled separately
+              .map((field) => (
+                <div key={field.fieldCode}>
+                  <label className="block font-medium mb-1">
+                    {field.fieldText} {field.mandatory && '*'}
+                  </label>
+
+                  {field.type === 'text' || field.type === 'number' || field.type === 'textarea' ? (
+                    field.type === 'textarea' ? (
+                      <textarea
+                        {...register(field.fieldCode, {
+                          required: field.mandatory,
+                        })}
+                        className="textarea w-full"
+                      />
+                    ) : (
+                      <input
+                        type={field.type}
+                        {...register(field.fieldCode, {
+                          required: field.mandatory,
+                        })}
+                        className="input w-full"
+                      />
+                    )
+                  ) : field.type === 'select' && field.options ? (
+                    <select
+                      {...register(field.fieldCode, {
+                        required: field.mandatory,
+                      })}
+                      className="select w-full"
+                    >
+                      <option value="">Select...</option>
+                      {field.options.map((opt) => (
+                        <option key={opt} value={opt}>
+                          {opt}
+                        </option>
+                      ))}
+                    </select>
+                  ) : field.type === 'checkbox' ? (
+                    <input
+                      type="checkbox"
+                      {...register(field.fieldCode)}
+                      className="checkbox"
+                    />
+                  ) : null}
+
+                  {errors[field.fieldCode] && (
+                    <span className="text-red-500 text-sm">Required</span>
+                  )}
+                </div>
+              ))}
+
+            {/* File ID Field */}
+            <div>
+              <label className="block font-medium mb-1">File ID</label>
+              <input
+                {...register('fileId', { required: true })}
+                className="input w-full"
+              />
+              {errors.fileId && <span className="text-red-500 text-sm">Required</span>}
+            </div>
+
+            {/* Type */}
+            <div>
+              <label className="block font-medium mb-1">Type</label>
+              <input
+                {...register('type')}
+                className="input w-full"
+              />
+            </div>
+
+            {/* Buttons */}
+            <div className="flex justify-end space-x-2">
+              <Button type="button" onClick={onClose} variant="ghost">
+                Cancel
+              </Button>
+              <Button type="submit">{initialData?.id ? 'Update' : 'Create'}</Button>
+            </div>
+          </form>
+        </Dialog.Panel>
       </div>
-    </div>
+    </Dialog>
   );
 };
-
-export default DocumentModal;
