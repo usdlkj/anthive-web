@@ -6,6 +6,7 @@ import UserTable from '@/components/tables/UserTable';
 import User from '@/interfaces/User';
 import { notFound } from 'next/navigation';
 import axiosInstance from '@/lib/axios';
+import { getApiBaseUrl } from '@/lib/api';
 
 async function fetchData(companyId: string) {
   const cookiesObject = await cookies();
@@ -14,7 +15,7 @@ async function fetchData(companyId: string) {
   if (!token) return notFound();
 
   try {
-    const res = await axiosInstance.get(`/companies/${companyId}/users`, {
+    const res = await axiosInstance.get(`${getApiBaseUrl()}/companies/${companyId}/users`, {
       headers: { Authorization: `Bearer ${token}` }
     });
 

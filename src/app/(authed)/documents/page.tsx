@@ -3,6 +3,7 @@ import { getUserFromServerToken } from '@/lib/server/getUserFromToken';
 import DocumentTableClient from '@/components/DocumentClient';
 import User from '@/interfaces/User';
 import axiosInstance from '@/lib/axios';
+import { getApiBaseUrl } from '@/lib/api';
 
 async function fetchData(userId: string) {
   const cookiesObject = await cookies();
@@ -13,15 +14,15 @@ async function fetchData(userId: string) {
   }
 
   try {
-    const res = await axiosInstance.get(`/users/${userId}`, {
+    const res = await axiosInstance.get(`${getApiBaseUrl()}/users/${userId}`, {
       headers: { Authorization: `Bearer ${token}` }
     });
     const user = res.data as User;
     const [docRes, fieldRes] = await Promise.all([
-      axiosInstance.get(`/documents?currentPage=1&pageSize=10`, {
+      axiosInstance.get(`${getApiBaseUrl()}/documents?currentPage=1&pageSize=10`, {
         headers: { Authorization: `Bearer ${token}` }
       }),
-      axiosInstance.get(`/project-fields?projectId=${user.currentProjectId}`, {
+      axiosInstance.get(`${getApiBaseUrl()}/project-fields?projectId=${user.currentProjectId}`, {
         headers: { Authorization: `Bearer ${token}` }
       })
     ]);

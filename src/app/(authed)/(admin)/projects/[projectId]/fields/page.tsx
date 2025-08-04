@@ -4,6 +4,7 @@ import { DatatableProps } from '@/interfaces/DatatableProps';
 import ProjectFieldTable from '@/components/tables/ProjectFieldTable';
 import ProjectField from '@/interfaces/ProjectField';
 import axiosInstance from '@/lib/axios';
+import { getApiBaseUrl } from '@/lib/api';
 
 async function fetchData(projectId: string) {
   const cookiesObject = await cookies();
@@ -16,7 +17,7 @@ async function fetchData(projectId: string) {
 
   try {
     const res = await axiosInstance.get(
-      `/project-fields?projectId=${projectId}`,
+      `${getApiBaseUrl()}/project-fields?projectId=${projectId}`,
       {
         headers: {
           Authorization: `Bearer ${token}`

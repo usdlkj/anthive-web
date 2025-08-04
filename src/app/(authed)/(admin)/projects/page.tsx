@@ -4,6 +4,7 @@ import { getUserFromServerToken } from '@/lib/server/getUserFromToken';
 import ProjectTable from '@/components/tables/ProjectTable';
 import Project from '@/interfaces/Project';
 import axiosInstance from '@/lib/axios';
+import { getApiBaseUrl } from '@/lib/api';
 
 async function fetchData() {
   const cookiesObject = await cookies();
@@ -15,7 +16,7 @@ async function fetchData() {
   }
 
   try {
-    const res = await axiosInstance.get(`/projects?currentPage=1&pageSize=10`, {
+    const res = await axiosInstance.get(`${getApiBaseUrl()}/projects?currentPage=1&pageSize=10`, {
       headers: {
         Authorization: `Bearer ${token}`
       }
