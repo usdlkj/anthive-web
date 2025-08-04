@@ -5,7 +5,7 @@ import User from "@/interfaces/User";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useEffect, useState } from "react";
 import Cookies from 'js-cookie';
-import axios from "axios";
+import axiosInstance from "@/lib/axios";
 
 const UserModal = ({ data, onClose, onSave }: ModalProps & { onSave?: () => void }) => {
   const [formData, setFormData] = useState<User | null>(data || null);
@@ -69,7 +69,7 @@ const handleSave = async () => {
     const { id, ...rest } = formData;
     const payload = isNewUser ? rest : { id, ...rest };
 
-    await axios({
+    await axiosInstance({
       method,
       url,
       data: payload,

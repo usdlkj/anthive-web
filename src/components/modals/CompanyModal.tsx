@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import ModalProps from "@/interfaces/ModalProps";
 import Cookies from "js-cookie";
 import Company from "@/interfaces/Company";
-import axios from "axios";
+import axiosInstance from "@/lib/axios";
 
 interface CompanyModalProps extends ModalProps {
   id: string;
@@ -14,13 +14,12 @@ interface CompanyModalProps extends ModalProps {
 const CompanyModal = ({ id, onClose, onSave, userRole }: CompanyModalProps) => {
   const [formData, setFormData] = useState<Partial<Company>>({});
   const token = Cookies.get('sempoa');
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   useEffect(() => {
     if (!id) return;
     const fetchBasicData = async () => {
       try {
-        const res = await axios.get(`${backendUrl}/api/companies/${id}`, {
+        const res = await axiosInstance.get(`/companies/${id}`, {
           headers: { Authorization : `Bearer ${token}` }
         });
         setFormData({

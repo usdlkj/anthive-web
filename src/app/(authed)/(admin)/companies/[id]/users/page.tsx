@@ -1,24 +1,21 @@
 // page.tsx
 import { cookies } from 'next/headers';
 import { DatatableProps } from '@/interfaces/DatatableProps';
-import axios from 'axios';
 import { getUserFromServerToken } from '@/lib/server/getUserFromToken';
 import UserTable from '@/components/tables/UserTable';
 import User from '@/interfaces/User';
 import { notFound } from 'next/navigation';
+import axiosInstance from '@/lib/axios';
 
 async function fetchData(companyId: string) {
   const cookiesObject = await cookies();
   const token = cookiesObject.get('sempoa')?.value;
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   if (!token) return notFound();
 
   try {
-    const res = await axios.get(`${backendUrl}/api/companies/${companyId}/users`, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
+    const res = await axiosInstance.get(`/companies/${companyId}/users`, {
+      headers: { Authorization: `Bearer ${token}` }
     });
 
     const json: DatatableProps<User, unknown> = res.data;
@@ -32,8 +29,8 @@ async function fetchData(companyId: string) {
   }
 }
 
-export default async function Companies({ params }: { params: { id: string } }) {
-  const id = (await params).id;
+export default async function CompanyUsers({ params }: any) {
+  const id = params.id;
   const { data, totalRows } = await fetchData(id);
   const user = await getUserFromServerToken();
   const role = user?.role ?? "USER";

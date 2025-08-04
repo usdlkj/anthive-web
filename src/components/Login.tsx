@@ -1,35 +1,39 @@
 'use client';
 
-import axios from "axios";
 import { useState } from "react";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
+import axiosInstance from "@/lib/axios";
 
 export default function Login ({ expiresIn }: { expiresIn: number }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const router = useRouter(); // Initialize the router
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   const handleLogin = async () => {
     toast.dismiss();
 
-    axios.post(`${backendUrl}/api/auth/login`, { email, password })
-      .then((res) => {
-        if (res.status !== 200 && res.status !== 201) {
-          toast.error('Something went wrong');
-          return;
-        }
+    if (!email || !password) {
+      toast.error("Email and password are required");
+      return;
+    }
 
-        Cookies.set('sempoa', res.data.access_token, { expires: expiresIn });
-        toast.success('Login successful!');
-        router.push('/dashboard');
-      })
-      .catch((err) => {
-        toast.error('Error occurred while logging in');
-        console.error(err.message);
-      })
+    try {
+      const res = await axiosInstance.post('/auth/login', { email, password });
+
+      if (![200, 201].includes(res.status)) {
+        toast.error('Something went wrong');
+        return;
+      }
+
+      Cookies.set('sempoa', res.data.access_token, { expires: expiresIn });
+      toast.success('Login successful!');
+      router.push('/dashboard');
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err?.response?.data?.message || 'Login failed');
+    }
   }
 
   return (

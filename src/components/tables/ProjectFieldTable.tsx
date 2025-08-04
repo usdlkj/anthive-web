@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import axios from 'axios';
 import Cookies from 'js-cookie';
 import { Pencil, Trash2, PlusCircle } from 'lucide-react';
 import { BackofficeDataTable } from "@/components/tables/BackofficeDataTable";
@@ -9,6 +8,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { useRouter } from 'next/navigation';
 import ProjectField from '@/interfaces/ProjectField';
 import ProjectFieldModal from '../modals/ProjectFieldModal';
+import axiosInstance from '@/lib/axios';
 
 interface Props {
   initialData: ProjectField[];
@@ -27,7 +27,6 @@ export default function ProjectFieldTable({ initialData, userRole, projectId }: 
   const router = useRouter();
 
   const token = Cookies.get('sempoa');
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   const columns: ColumnDef<ProjectField>[] = [
     {
@@ -84,12 +83,12 @@ export default function ProjectFieldTable({ initialData, userRole, projectId }: 
 
   const handleAddEdit = async (field: ProjectField) => {
     const endpoint = field.id
-      ? `${backendUrl}/api/project-fields/${field.id}`
-      : `${backendUrl}/api/project-fields`;
+      ? `/project-fields/${field.id}`
+      : `/project-fields`;
     const method = field.id ? 'patch' : 'post';
 
     try {
-      await axios[method](endpoint, field, {
+      await axiosInstance[method](endpoint, field, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setIsModalOpen(false);
@@ -101,7 +100,7 @@ export default function ProjectFieldTable({ initialData, userRole, projectId }: 
 
   const handleDisable = async (id: string) => {
     try {
-      await axios.delete(`${backendUrl}/api/project-fields/${id}`, {
+      await axiosInstance.delete(`/project-fields/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       fetchData();
@@ -112,7 +111,7 @@ export default function ProjectFieldTable({ initialData, userRole, projectId }: 
 
   const fetchData = () => {
     setLoading(true);
-    axios.get(`${backendUrl}/api/project-fields?projectId=${projectId}`, {
+    axiosInstance.get(`/project-fields?projectId=${projectId}`, {
       headers: {
         Authorization: `Bearer ${Cookies.get('sempoa')}`
       }

@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import axios from 'axios';
 import Cookies from 'js-cookie';
 import { Pencil, Trash2, PlusCircle, User } from 'lucide-react';
 import { BackofficeDataTable } from "@/components/tables/BackofficeDataTable";
@@ -9,6 +8,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import Company from '@/interfaces/Company';
 import CompanyModal from '../modals/CompanyModal';
 import { useRouter } from 'next/navigation';
+import axiosInstance from '@/lib/axios';
 
 interface Props {
   initialData: Company[];
@@ -16,7 +16,6 @@ interface Props {
 }
 
 export default function CompanyTable({ initialData, userRole }: Props) {
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
   const [data, setData] = useState(initialData);
   // const [totalRows, setTotalRows] = useState(initialTotalRows);
   const [loading, setLoading] = useState(false);
@@ -89,12 +88,12 @@ export default function CompanyTable({ initialData, userRole }: Props) {
 
   const handleAddEdit = async (company: Company) => {
     const endpoint = company.id
-      ? `${backendUrl}/api/companies/${company.id}`
-      : `${backendUrl}/api/companies`;
+      ? `/companies/${company.id}`
+      : `/companies`;
     const method = company.id ? 'patch' : 'post';
 
     try {
-      await axios[method](endpoint, company, {
+      await axiosInstance[method](endpoint, company, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setIsModalOpen(false);
@@ -106,7 +105,7 @@ export default function CompanyTable({ initialData, userRole }: Props) {
 
   const handleDisable = async (id: string) => {
     try {
-      await axios.delete(`${backendUrl}/api/companies/${id}`, {
+      await axiosInstance.delete(`/companies/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       fetchData();
@@ -117,7 +116,7 @@ export default function CompanyTable({ initialData, userRole }: Props) {
 
   const fetchData = () => {
     setLoading(true);
-    axios.get(`${backendUrl}/api/companies`, {
+    axiosInstance.get(`/companies`, {
       headers: {
         Authorization: `Bearer ${Cookies.get('sempoa')}`
       }

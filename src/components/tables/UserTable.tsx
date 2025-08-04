@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import axios from 'axios';
 import Cookies from 'js-cookie';
 import { Trash2, PlusCircle } from 'lucide-react';
 import UserModal from '../modals/UserModal';
@@ -9,6 +8,7 @@ import User from '@/interfaces/User';
 import { BackofficeDataTable } from "@/components/tables/BackofficeDataTable";
 import { ColumnDef } from "@tanstack/react-table";
 import { formatWibDate } from '@/lib/formatters';
+import axiosInstance from '@/lib/axios';
 
 interface Props {
   initialData: User[];
@@ -90,7 +90,7 @@ export default function UserTable({ initialData, companyId, userRole }: Props) {
 
   const fetchData = () => {
     setLoading(true);
-    axios.get(`${backendUrl}/api/companies/${companyId}/users`, {
+    axiosInstance.get(`/companies/${companyId}/users`, {
       headers: {
         Authorization: `Bearer ${token}`
       }
@@ -104,7 +104,7 @@ export default function UserTable({ initialData, companyId, userRole }: Props) {
 
   const handleDisable = async (id: string) => {
     try {
-      await axios.delete(`${backendUrl}/api/users/${id}`, {
+      await axiosInstance.delete(`/users/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       fetchData();

@@ -5,11 +5,12 @@ interface JwtPayload {
   name: string;
   email: string;
   role: string;
+  userId: string;
 }
 
 export async function getUserFromServerToken(): Promise<JwtPayload | null> {
   const cookiesObject = await cookies(); // ✅ await the Promise
-  const token = cookiesObject.get('whoosh')?.value;
+  const token = cookiesObject.get('sempoa')?.value;
   if (!token) return null;
 
   try {

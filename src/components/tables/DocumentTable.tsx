@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Document } from '@/interfaces/Document';
 import ProjectField from '@/interfaces/ProjectField';
-import { Table } from '@/components/ui/table'; // your reusable table, or use `react-table`
+import { Table } from '../ui/table'; // your reusable table, or use `react-table`
 import { Pencil, Eye } from 'lucide-react';
 
 interface DocumentTableProps {
@@ -30,9 +30,6 @@ export const DocumentTable: React.FC<DocumentTableProps> = ({
       <table className="min-w-full table-auto border">
         <thead className="bg-gray-100">
           <tr>
-            <th className="px-4 py-2 border">Doc Code</th>
-            <th className="px-4 py-2 border">Version</th>
-            <th className="px-4 py-2 border">Status</th>
             {dynamicFields.map((field) => (
               <th key={field.fieldCode} className="px-4 py-2 border">
                 {field.fieldText}
@@ -44,8 +41,6 @@ export const DocumentTable: React.FC<DocumentTableProps> = ({
         <tbody>
           {documents.map((doc) => (
             <tr key={doc.id} className="hover:bg-gray-50">
-              <td className="px-4 py-2 border">{doc.docCode}</td>
-              <td className="px-4 py-2 border">{doc.version}</td>
               {dynamicFields.map((field) => (
                 <td key={field.fieldCode} className="px-4 py-2 border">
                   {doc.documentField?.[field.fieldCode] ?? <span className="text-gray-400">—</span>}

@@ -1,14 +1,13 @@
 import { cookies } from 'next/headers';
-import axios from 'axios';
 import { getUserFromServerToken } from '@/lib/server/getUserFromToken';
 import { DatatableProps } from '@/interfaces/DatatableProps';
 import ProjectFieldTable from '@/components/tables/ProjectFieldTable';
 import ProjectField from '@/interfaces/ProjectField';
+import axiosInstance from '@/lib/axios';
 
 async function fetchData(projectId: string) {
   const cookiesObject = await cookies();
   const token = cookiesObject.get('sempoa')?.value;
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   if (!token) {
     console.error('Missing authentication token');
@@ -16,8 +15,8 @@ async function fetchData(projectId: string) {
   }
 
   try {
-    const res = await axios.get(
-      `${backendUrl}/api/project-fields?projectId=${projectId}`,
+    const res = await axiosInstance.get(
+      `/project-fields?projectId=${projectId}`,
       {
         headers: {
           Authorization: `Bearer ${token}`
@@ -37,7 +36,7 @@ async function fetchData(projectId: string) {
   }
 }
 
-export default async function ProjectFieldsPage({ params }: { params: { projectId: string } }) {
+export default async function ProjectFieldsPage({ params }: any) {
   const { projectId } = await params;
   const { data, totalRows } = await fetchData(projectId);
   const user = await getUserFromServerToken();

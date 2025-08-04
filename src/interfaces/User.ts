@@ -8,4 +8,5 @@ export default interface User {
   lastLoginDate: string;
   status: string;
   companyId: string;
+  currentProjectId?: string;
 }

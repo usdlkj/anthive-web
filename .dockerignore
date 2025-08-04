@@ -11,9 +11,9 @@ out
 build
 
 # Ignore local environment variables
+.env
 .env.local
 .env.development
-.env.production
 .env.test
 
 # Ignore cache files

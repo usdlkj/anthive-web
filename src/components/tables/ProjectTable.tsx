@@ -1,21 +1,22 @@
 'use client';
 
 import { useState } from 'react';
-import axios from 'axios';
 import Cookies from 'js-cookie';
-import { Pencil, Trash2, PlusCircle, BookOpen } from 'lucide-react';
+import { Pencil, Trash2, PlusCircle, BookOpen, CheckCircle } from 'lucide-react';
 import { BackofficeDataTable } from "@/components/tables/BackofficeDataTable";
 import { ColumnDef } from "@tanstack/react-table";
 import { useRouter } from 'next/navigation';
 import ProjectModal from '../modals/ProjectModal';
 import Project from '@/interfaces/Project';
+import axiosInstance from '@/lib/axios';
 
 interface Props {
   initialData: Project[];
   userRole: string;
+  userId: string;
 }
 
-export default function ProjectTable({ initialData, userRole }: Props) {
+export default function ProjectTable({ initialData, userRole, userId }: Props) {
   const [data, setData] = useState(initialData);
   // const [totalRows, setTotalRows] = useState(initialTotalRows);
   const [loading, setLoading] = useState(false);
@@ -26,7 +27,6 @@ export default function ProjectTable({ initialData, userRole }: Props) {
   const router = useRouter();
 
   const token = Cookies.get('sempoa');
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   const columns: ColumnDef<Project>[] = [
     {
@@ -63,6 +63,12 @@ export default function ProjectTable({ initialData, userRole }: Props) {
             <BookOpen className="w-4 h-4" />
           </button>
           <button
+            onClick={() => handleSetCurrentProject(row.original.id)}
+            className="text-blue-500 hover:text-blue-700 p-2 border rounded border-gray-200 mr-2"
+          >
+            <CheckCircle className="w-4 h-4" />
+          </button>
+          <button
             onClick={() => handleDisable(row.original.id)}
             className="text-red-500 hover:text-red-700 p-2 border rounded border-gray-200 mr-2"
           >
@@ -73,14 +79,30 @@ export default function ProjectTable({ initialData, userRole }: Props) {
     },
   ];
 
+  const handleSetCurrentProject = async (id: string) => {
+    const endpoint = `/users/${userId}/current-project`;
+    try {
+      await axiosInstance.patch(endpoint, 
+        {
+          currentProjectId: id,
+        }, 
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+    } catch (err) {
+      console.error('Error saving:', err);
+    }
+  }
+
   const handleAddEdit = async (project: Project) => {
     const endpoint = project.id
-      ? `/api/projects/${project.id}`
-      : '/api/projects';
+      ? `/projects/${project.id}`
+      : `/projects`;
     const method = project.id ? 'patch' : 'post';
 
     try {
-      await axios[method](endpoint, project, {
+      await axiosInstance[method](endpoint, project, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setIsModalOpen(false);
@@ -92,7 +114,7 @@ export default function ProjectTable({ initialData, userRole }: Props) {
 
   const handleDisable = async (id: string) => {
     try {
-      await axios.delete(`/api/projects/${id}`, {
+      await axiosInstance.delete(`/projects/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       fetchData();
@@ -103,7 +125,7 @@ export default function ProjectTable({ initialData, userRole }: Props) {
 
   const fetchData = () => {
     setLoading(true);
-    axios.get(`${backendUrl}/api/projects`, {
+    axiosInstance.get(`/projects`, {
       headers: {
         Authorization: `Bearer ${Cookies.get('sempoa')}`
       }

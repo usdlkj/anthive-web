@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import ModalProps from "@/interfaces/ModalProps";
 import Cookies from "js-cookie";
 import Project from "@/interfaces/Project";
-import axios from "axios";
+import axiosInstance from "@/lib/axios";
 
 interface ProjectModalProps extends ModalProps {
   id: string;
@@ -14,13 +14,12 @@ interface ProjectModalProps extends ModalProps {
 const ProjectModal = ({ id, onClose, onSave, userRole }: ProjectModalProps) => {
   const [formData, setFormData] = useState<Partial<Project>>({});
   const token = Cookies.get('sempoa');
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   useEffect(() => {
     if (!id) return;
     const fetchBasicData = async () => {
       try {
-        const res = await axios.get(`${backendUrl}/api/projects/${id}`, {
+        const res = await axiosInstance.get(`/projects/${id}`, {
           headers: { Authorization : `Bearer ${token}` }
         });
         setFormData({

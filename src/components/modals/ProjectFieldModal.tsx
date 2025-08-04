@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import ModalProps from "@/interfaces/ModalProps";
 import Cookies from "js-cookie";
 import ProjectField from "@/interfaces/ProjectField";
-import axios from "axios";
+import axiosInstance from "@/lib/axios";
 
 interface ProjectFieldModalProps extends ModalProps {
   id: string;
@@ -16,13 +16,12 @@ const ProjectFieldModal = ({ id, onClose, onSave, userRole, projectId }: Project
   const [formData, setFormData] = useState<Partial<ProjectField>>({});
   const [fields, setFields] = useState<ProjectField[]>([]);
   const token = Cookies.get('sempoa');
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   useEffect(() => {
     if (!id || !token) return;
     const fetchBasicData = async () => {
       try {
-        const res = await axios.get(`${backendUrl}/api/project-fields/${id}`, {
+        const res = await axiosInstance.get(`/project-fields/${id}`, {
           headers: { Authorization : `Bearer ${token}` }
         });
         setFormData({
@@ -37,7 +36,7 @@ const ProjectFieldModal = ({ id, onClose, onSave, userRole, projectId }: Project
     // Fetch all fields for this project
     const fetchAllFields = async () => {
       try {
-        const res = await axios.get(`${backendUrl}/api/project-fields?projectId=${projectId}`, {
+        const res = await axiosInstance.get(`/project-fields?projectId=${projectId}`, {
           headers: { Authorization : `Bearer ${token}` }
         });
         setFields(res.data || []);
