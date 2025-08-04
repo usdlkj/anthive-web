@@ -10,18 +10,19 @@ export default function Login ({ expiresIn }: { expiresIn: number }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const router = useRouter(); // Initialize the router
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   const handleLogin = async () => {
     toast.dismiss();
 
-    axios.post('/api/auth/login', { email, password })
+    axios.post(`${backendUrl}/api/auth/login`, { email, password })
       .then((res) => {
-        if (res.status != 200) {
+        if (res.status !== 200 && res.status !== 201) {
           toast.error('Something went wrong');
           return;
         }
 
-        Cookies.set('sempoa', res.data.token, { expires: expiresIn });
+        Cookies.set('sempoa', res.data.access_token, { expires: expiresIn });
         toast.success('Login successful!');
         router.push('/dashboard');
       })

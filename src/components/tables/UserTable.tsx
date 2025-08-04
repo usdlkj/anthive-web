@@ -23,6 +23,7 @@ export default function UserTable({ initialData, companyId, userRole }: Props) {
   const [modalData, setModalData] = useState<User | null>(null);
 
   const token = Cookies.get('sempoa');
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   const columns: ColumnDef<User>[] = [
     {
@@ -89,7 +90,7 @@ export default function UserTable({ initialData, companyId, userRole }: Props) {
 
   const fetchData = () => {
     setLoading(true);
-    axios.get(`/api/companies/${companyId}/users`, {
+    axios.get(`${backendUrl}/api/companies/${companyId}/users`, {
       headers: {
         Authorization: `Bearer ${token}`
       }
@@ -103,7 +104,7 @@ export default function UserTable({ initialData, companyId, userRole }: Props) {
 
   const handleDisable = async (id: string) => {
     try {
-      await axios.delete(`/api/users/${id}`, {
+      await axios.delete(`${backendUrl}/api/users/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       fetchData();

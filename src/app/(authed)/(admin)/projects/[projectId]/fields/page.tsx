@@ -8,6 +8,7 @@ import ProjectField from '@/interfaces/ProjectField';
 async function fetchData(projectId: string) {
   const cookiesObject = await cookies();
   const token = cookiesObject.get('sempoa')?.value;
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   if (!token) {
     console.error('Missing authentication token');
@@ -16,7 +17,7 @@ async function fetchData(projectId: string) {
 
   try {
     const res = await axios.get(
-      `${process.env.BACKEND_URL}/project-fields?projectId=${projectId}`,
+      `${backendUrl}/api/project-fields?projectId=${projectId}`,
       {
         headers: {
           Authorization: `Bearer ${token}`

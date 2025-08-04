@@ -10,11 +10,12 @@ import { notFound } from 'next/navigation';
 async function fetchData(companyId: string) {
   const cookiesObject = await cookies();
   const token = cookiesObject.get('sempoa')?.value;
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   if (!token) return notFound();
 
   try {
-    const res = await axios.get(`${process.env.BACKEND_URL}/companies/${companyId}/users`, {
+    const res = await axios.get(`${backendUrl}/api/companies/${companyId}/users`, {
       headers: {
         Authorization: `Bearer ${token}`
       }

@@ -12,6 +12,7 @@ const UserModal = ({ data, onClose, onSave }: ModalProps & { onSave?: () => void
   const [confirmPassword, setConfirmPassword] = useState<string>('');
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [showPasswordFields, setShowPasswordFields] = useState(false);
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   useEffect(() => {
     setFormData(data);
@@ -60,7 +61,7 @@ const handleSave = async () => {
   }
 
   setErrors({});
-  const url = isNewUser ? '/api/users' : `/api/users/${formData.id}`;
+  const url = isNewUser ? `${backendUrl}/api/users` : `${backendUrl}/api/users/${formData.id}`;
   const method = isNewUser ? 'POST' : 'PATCH';
   const token = Cookies.get('sempoa');
 

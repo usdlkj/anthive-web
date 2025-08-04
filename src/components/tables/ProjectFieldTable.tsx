@@ -27,6 +27,7 @@ export default function ProjectFieldTable({ initialData, userRole, projectId }: 
   const router = useRouter();
 
   const token = Cookies.get('sempoa');
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   const columns: ColumnDef<ProjectField>[] = [
     {
@@ -79,8 +80,8 @@ export default function ProjectFieldTable({ initialData, userRole, projectId }: 
 
   const handleAddEdit = async (field: ProjectField) => {
     const endpoint = field.id
-      ? `/api/project-fields/${field.id}`
-      : '/api/project-fields';
+      ? `${backendUrl}/api/project-fields/${field.id}`
+      : `${backendUrl}/api/project-fields`;
     const method = field.id ? 'patch' : 'post';
 
     try {
@@ -96,7 +97,7 @@ export default function ProjectFieldTable({ initialData, userRole, projectId }: 
 
   const handleDisable = async (id: string) => {
     try {
-      await axios.delete(`/api/project-fields/${id}`, {
+      await axios.delete(`${backendUrl}/api/project-fields/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       fetchData();
@@ -107,7 +108,7 @@ export default function ProjectFieldTable({ initialData, userRole, projectId }: 
 
   const fetchData = () => {
     setLoading(true);
-    axios.get(`/api/project-fields?projectId=${projectId}`, {
+    axios.get(`${backendUrl}/api/project-fields?projectId=${projectId}`, {
       headers: {
         Authorization: `Bearer ${Cookies.get('sempoa')}`
       }

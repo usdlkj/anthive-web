@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import ModalProps from "@/interfaces/ModalProps";
 import Cookies from "js-cookie";
 import Project from "@/interfaces/Project";
+import axios from "axios";
 
 interface ProjectModalProps extends ModalProps {
   id: string;
@@ -13,18 +14,18 @@ interface ProjectModalProps extends ModalProps {
 const ProjectModal = ({ id, onClose, onSave, userRole }: ProjectModalProps) => {
   const [formData, setFormData] = useState<Partial<Project>>({});
   const token = Cookies.get('sempoa');
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   useEffect(() => {
     if (!id) return;
     const fetchBasicData = async () => {
       try {
-        const res = await fetch(`/api/projects/${id}`, {
+        const res = await axios.get(`${backendUrl}/api/projects/${id}`, {
           headers: { Authorization : `Bearer ${token}` }
         });
-        const json = await res.json();
         setFormData({
-          ...json.data,
-          status: json.data.status || "development",
+          ...res.data,
+          status: res.data.status || "development",
         });
       } catch (err) {
         console.error("Failed to fetch project detail", err);

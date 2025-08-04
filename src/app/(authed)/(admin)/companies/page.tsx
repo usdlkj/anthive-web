@@ -8,6 +8,7 @@ import Company from '@/interfaces/Company';
 async function fetchData() {
   const cookiesObject = await cookies();
   const token = cookiesObject.get('sempoa')?.value; // Securely get the token from server cookies
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   if (!token) {
     console.error('Missing authentication token');
@@ -15,12 +16,11 @@ async function fetchData() {
   }
 
   try {
-    const res = await axios.get(`${process.env.BACKEND_URL}/companies?currentPage=1&pageSize=10`, {
+    const res = await axios.get(`${backendUrl}/api/companies?currentPage=1&pageSize=10`, {
       headers: {
         Authorization: `Bearer ${token}`
       }
     });
-
     const json: DatatableProps<Company, unknown> = res.data;
     return { 
       data: json.data, 

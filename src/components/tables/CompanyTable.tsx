@@ -16,6 +16,7 @@ interface Props {
 }
 
 export default function CompanyTable({ initialData, userRole }: Props) {
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
   const [data, setData] = useState(initialData);
   // const [totalRows, setTotalRows] = useState(initialTotalRows);
   const [loading, setLoading] = useState(false);
@@ -88,8 +89,8 @@ export default function CompanyTable({ initialData, userRole }: Props) {
 
   const handleAddEdit = async (company: Company) => {
     const endpoint = company.id
-      ? `/api/companies/${company.id}`
-      : '/api/companies';
+      ? `${backendUrl}/api/companies/${company.id}`
+      : `${backendUrl}/api/companies`;
     const method = company.id ? 'patch' : 'post';
 
     try {
@@ -105,7 +106,7 @@ export default function CompanyTable({ initialData, userRole }: Props) {
 
   const handleDisable = async (id: string) => {
     try {
-      await axios.delete(`/api/companies/${id}`, {
+      await axios.delete(`${backendUrl}/api/companies/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       fetchData();
@@ -116,7 +117,7 @@ export default function CompanyTable({ initialData, userRole }: Props) {
 
   const fetchData = () => {
     setLoading(true);
-    axios.get(`/api/companies`, {
+    axios.get(`${backendUrl}/api/companies`, {
       headers: {
         Authorization: `Bearer ${Cookies.get('sempoa')}`
       }
