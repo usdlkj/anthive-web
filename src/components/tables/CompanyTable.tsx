@@ -9,6 +9,7 @@ import Company from '@/interfaces/Company';
 import CompanyModal from '../modals/CompanyModal';
 import { useRouter } from 'next/navigation';
 import axiosInstance from '@/lib/axios';
+import { getApiBaseUrl } from '@/lib/api';
 
 interface Props {
   initialData: Company[];
@@ -88,8 +89,8 @@ export default function CompanyTable({ initialData, userRole }: Props) {
 
   const handleAddEdit = async (company: Company) => {
     const endpoint = company.id
-      ? `/companies/${company.id}`
-      : `/companies`;
+      ? `${getApiBaseUrl()}/companies/${company.id}`
+      : `${getApiBaseUrl()}/companies`;
     const method = company.id ? 'patch' : 'post';
 
     try {
@@ -105,7 +106,7 @@ export default function CompanyTable({ initialData, userRole }: Props) {
 
   const handleDisable = async (id: string) => {
     try {
-      await axiosInstance.delete(`/companies/${id}`, {
+      await axiosInstance.delete(`${getApiBaseUrl()}/companies/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       fetchData();
@@ -116,13 +117,11 @@ export default function CompanyTable({ initialData, userRole }: Props) {
 
   const fetchData = () => {
     setLoading(true);
-    axiosInstance.get(`/companies`, {
-      headers: {
-        Authorization: `Bearer ${Cookies.get('sempoa')}`
-      }
+    axiosInstance.get(`${getApiBaseUrl()}/companies`, {
+      headers: { Authorization: `Bearer ${Cookies.get('sempoa')}` }
     })
       .then(res => {
-        setData(res.data.data.data);
+        setData(res.data.data);
       })
       .catch(err => console.error('Get error:', err))
       .finally(() => setLoading(false));

@@ -112,12 +112,10 @@ export default function ProjectFieldTable({ initialData, userRole, projectId }: 
   const fetchData = () => {
     setLoading(true);
     axiosInstance.get(`/project-fields?projectId=${projectId}`, {
-      headers: {
-        Authorization: `Bearer ${Cookies.get('sempoa')}`
-      }
+      headers: { Authorization: `Bearer ${Cookies.get('sempoa')}` }
     })
       .then(res => {
-        setData(res.data.data.data);
+        setData(res.data.data);
       })
       .catch(err => console.error('Get error:', err))
       .finally(() => setLoading(false));

@@ -31,7 +31,7 @@ const TopBar = () => {
       name: 'Documents',
       subMenu: [
         { name: 'Document Register', href: '/documents' },
-        { name: 'Upload Document', href: '/payment-types' },
+        { name: 'Upload Document', href: '/documents/upload' },
       ],
     },
   ];

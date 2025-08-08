@@ -19,6 +19,7 @@ async function fetchData(companyId: string) {
       headers: { Authorization: `Bearer ${token}` }
     });
 
+    console.log(`res: ${JSON.stringify(res.data)}`);
     const json: DatatableProps<User, unknown> = res.data;
     return {
       data: json.data,
@@ -31,7 +32,7 @@ async function fetchData(companyId: string) {
 }
 
 export default async function CompanyUsers({ params }: any) {
-  const id = params.id;
+  const id = (await params).id;
   const { data, totalRows } = await fetchData(id);
   const user = await getUserFromServerToken();
   const role = user?.role ?? "USER";

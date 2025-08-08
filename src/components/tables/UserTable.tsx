@@ -9,6 +9,7 @@ import { BackofficeDataTable } from "@/components/tables/BackofficeDataTable";
 import { ColumnDef } from "@tanstack/react-table";
 import { formatWibDate } from '@/lib/formatters';
 import axiosInstance from '@/lib/axios';
+import { getApiBaseUrl } from '@/lib/api';
 
 interface Props {
   initialData: User[];
@@ -23,7 +24,6 @@ export default function UserTable({ initialData, companyId, userRole }: Props) {
   const [modalData, setModalData] = useState<User | null>(null);
 
   const token = Cookies.get('sempoa');
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   const columns: ColumnDef<User>[] = [
     {
@@ -90,13 +90,11 @@ export default function UserTable({ initialData, companyId, userRole }: Props) {
 
   const fetchData = () => {
     setLoading(true);
-    axiosInstance.get(`/companies/${companyId}/users`, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
+    axiosInstance.get(`${getApiBaseUrl()}/companies/${companyId}/users`, {
+      headers: { Authorization: `Bearer ${token}` }
     })
       .then(res => {
-        setData(res.data.data.data);
+        setData(res.data.data);
       })
       .catch(err => console.error('Get error:', err))
       .finally(() => setLoading(false));
@@ -104,7 +102,7 @@ export default function UserTable({ initialData, companyId, userRole }: Props) {
 
   const handleDisable = async (id: string) => {
     try {
-      await axiosInstance.delete(`/users/${id}`, {
+      await axiosInstance.delete(`${getApiBaseUrl()}/users/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       fetchData();

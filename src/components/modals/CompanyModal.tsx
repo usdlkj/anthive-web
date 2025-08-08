@@ -5,6 +5,7 @@ import ModalProps from "@/interfaces/ModalProps";
 import Cookies from "js-cookie";
 import Company from "@/interfaces/Company";
 import axiosInstance from "@/lib/axios";
+import { getApiBaseUrl } from "@/lib/api";
 
 interface CompanyModalProps extends ModalProps {
   id: string;
@@ -19,7 +20,7 @@ const CompanyModal = ({ id, onClose, onSave, userRole }: CompanyModalProps) => {
     if (!id) return;
     const fetchBasicData = async () => {
       try {
-        const res = await axiosInstance.get(`/companies/${id}`, {
+        const res = await axiosInstance.get(`${getApiBaseUrl()}/companies/${id}`, {
           headers: { Authorization : `Bearer ${token}` }
         });
         setFormData({

@@ -6,13 +6,13 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { useEffect, useState } from "react";
 import Cookies from 'js-cookie';
 import axiosInstance from "@/lib/axios";
+import { getApiBaseUrl } from "@/lib/api";
 
 const UserModal = ({ data, onClose, onSave }: ModalProps & { onSave?: () => void }) => {
   const [formData, setFormData] = useState<User | null>(data || null);
   const [confirmPassword, setConfirmPassword] = useState<string>('');
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [showPasswordFields, setShowPasswordFields] = useState(false);
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   useEffect(() => {
     setFormData(data);
@@ -61,7 +61,7 @@ const handleSave = async () => {
   }
 
   setErrors({});
-  const url = isNewUser ? `${backendUrl}/api/users` : `${backendUrl}/api/users/${formData.id}`;
+  const url = isNewUser ? `${getApiBaseUrl()}/users` : `${getApiBaseUrl()}/users/${formData.id}`;
   const method = isNewUser ? 'POST' : 'PATCH';
   const token = Cookies.get('sempoa');
 
@@ -90,6 +90,9 @@ const handleSave = async () => {
           <DialogTitle>User</DialogTitle>
         </DialogHeader>
         <form>
+          {/* Company Id */}
+          <input type="hidden" value={data.companyId || ''} />
+
           {/* Name */}
           <div className="mb-4">
             <label className="block text-sm font-medium mb-2">Name<span className="text-red-500">*</span></label>
