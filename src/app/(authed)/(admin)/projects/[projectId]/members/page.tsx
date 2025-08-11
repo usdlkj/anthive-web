@@ -1,10 +1,9 @@
 import { cookies } from 'next/headers';
 import { getUserFromServerToken } from '@/lib/server/getUserFromToken';
 import { DatatableProps } from '@/interfaces/DatatableProps';
-import ProjectFieldTable from '@/components/tables/ProjectFieldTable';
 import ProjectField from '@/interfaces/ProjectField';
 import axiosInstance from '@/lib/axios';
-import { getApiBaseUrl } from '@/lib/api';
+import ProjectMemberTable from '@/components/tables/ProjectMemberTable';
 
 async function fetchData(projectId: string) {
   const cookiesObject = await cookies();
@@ -17,14 +16,11 @@ async function fetchData(projectId: string) {
 
   try {
     const res = await axiosInstance.get(
-      `/project-fields?projectId=${projectId}`,
+      `/project-members?projectId=${projectId}`,
       {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
+        headers: { Authorization: `Bearer ${token}` },
       }
     );
-
     const json: DatatableProps<ProjectField, unknown> = res.data;
     return {
       data: json.data,
@@ -37,7 +33,7 @@ async function fetchData(projectId: string) {
   }
 }
 
-export default async function ProjectFieldsPage({ params }: any) {
+export default async function ProjectMembersPage({ params }: any) {
   const { projectId } = await params;
   const { data, totalRows } = await fetchData(projectId);
   const user = await getUserFromServerToken();
@@ -45,8 +41,8 @@ export default async function ProjectFieldsPage({ params }: any) {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-kcicGray">
-      <h1 className="text-2xl font-bold mb-4 text-kcicBlack">Project Fields</h1>
-      <ProjectFieldTable initialData={data} userRole={role} projectId={projectId} />
+      <h1 className="text-2xl font-bold mb-4 text-kcicBlack">Project Members</h1>
+      <ProjectMemberTable initialData={data} userRole={role} projectId={projectId} />
     </div>
   );
 }

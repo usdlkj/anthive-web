@@ -4,7 +4,6 @@ import { getUserFromServerToken } from '@/lib/server/getUserFromToken';
 import CompanyTable from '@/components/tables/CompanyTable';
 import Company from '@/interfaces/Company';
 import axiosInstance from '@/lib/axios';
-import { getApiBaseUrl } from '@/lib/api';
 
 async function fetchData() {
   const cookiesObject = await cookies();
@@ -16,7 +15,7 @@ async function fetchData() {
   }
 
   try {
-    const res = await axiosInstance.get(`${getApiBaseUrl()}/companies?currentPage=1&pageSize=10`, {
+    const res = await axiosInstance.get(`/companies?currentPage=1&pageSize=10`, {
       headers: { Authorization: `Bearer ${token}` }
     });
     const json: DatatableProps<Company, unknown> = res.data;

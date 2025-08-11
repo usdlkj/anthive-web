@@ -4,8 +4,14 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Menu } from '@headlessui/react'; // For the dropdown functionality
 import { ChevronDown, User, LogOut, Settings, Lock } from 'lucide-react'; // Icons
+import CurrentProjectSelect from './CurrentProjectSelect';
+import UserObj from '@/interfaces/User';
 
-const TopBar = () => {
+interface TopBarProps {
+  user: UserObj | null;
+}
+
+const TopBar = ({ user }: TopBarProps) => {
   const router = useRouter();
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
 
@@ -43,6 +49,13 @@ const TopBar = () => {
         <a href="/dashboard">
           <img src="/kcic_logo_500x305.png" alt="KCIC Backoffice" className="h-10" />
         </a>
+
+        {/* Current Project Select */}
+        <CurrentProjectSelect
+          value={user?.currentProjectId}
+          allowClear
+          onChanged={(p) => console.log("changed to", p)}
+        />
 
         {/* Navigation */}
         <div className="flex space-x-6">

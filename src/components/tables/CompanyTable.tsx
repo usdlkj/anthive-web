@@ -9,7 +9,6 @@ import Company from '@/interfaces/Company';
 import CompanyModal from '../modals/CompanyModal';
 import { useRouter } from 'next/navigation';
 import axiosInstance from '@/lib/axios';
-import { getApiBaseUrl } from '@/lib/api';
 
 interface Props {
   initialData: Company[];
@@ -89,8 +88,8 @@ export default function CompanyTable({ initialData, userRole }: Props) {
 
   const handleAddEdit = async (company: Company) => {
     const endpoint = company.id
-      ? `${getApiBaseUrl()}/companies/${company.id}`
-      : `${getApiBaseUrl()}/companies`;
+      ? `/companies/${company.id}`
+      : `/companies`;
     const method = company.id ? 'patch' : 'post';
 
     try {
@@ -106,7 +105,7 @@ export default function CompanyTable({ initialData, userRole }: Props) {
 
   const handleDisable = async (id: string) => {
     try {
-      await axiosInstance.delete(`${getApiBaseUrl()}/companies/${id}`, {
+      await axiosInstance.delete(`/companies/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       fetchData();
@@ -117,7 +116,7 @@ export default function CompanyTable({ initialData, userRole }: Props) {
 
   const fetchData = () => {
     setLoading(true);
-    axiosInstance.get(`${getApiBaseUrl()}/companies`, {
+    axiosInstance.get(`/companies`, {
       headers: { Authorization: `Bearer ${Cookies.get('sempoa')}` }
     })
       .then(res => {

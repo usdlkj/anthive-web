@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Cookies from 'js-cookie';
-import { Pencil, Trash2, PlusCircle, BookOpen, CheckCircle } from 'lucide-react';
+import { Pencil, Trash2, PlusCircle, BookOpen, CheckCircle, User } from 'lucide-react';
 import { BackofficeDataTable } from "@/components/tables/BackofficeDataTable";
 import { ColumnDef } from "@tanstack/react-table";
 import { useRouter } from 'next/navigation';
@@ -67,6 +67,14 @@ export default function ProjectTable({ initialData, userRole, userId }: Props) {
             className="text-blue-500 hover:text-blue-700 p-2 border rounded border-gray-200 mr-2"
           >
             <CheckCircle className="w-4 h-4" />
+          </button>
+          <button
+            onClick={() => {
+              router.push(`/projects/${row.original.id}/members`);
+            }}
+            className="text-blue-500 hover:text-blue-700 p-2 border rounded border-gray-200 mr-2"
+          >
+            <User className="w-4 h-4" />
           </button>
           <button
             onClick={() => handleDisable(row.original.id)}

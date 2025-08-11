@@ -9,7 +9,6 @@ import { BackofficeDataTable } from "@/components/tables/BackofficeDataTable";
 import { ColumnDef } from "@tanstack/react-table";
 import { formatWibDate } from '@/lib/formatters';
 import axiosInstance from '@/lib/axios';
-import { getApiBaseUrl } from '@/lib/api';
 
 interface Props {
   initialData: User[];
@@ -90,7 +89,7 @@ export default function UserTable({ initialData, companyId, userRole }: Props) {
 
   const fetchData = () => {
     setLoading(true);
-    axiosInstance.get(`${getApiBaseUrl()}/companies/${companyId}/users`, {
+    axiosInstance.get(`/companies/${companyId}/users`, {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(res => {
@@ -102,7 +101,7 @@ export default function UserTable({ initialData, companyId, userRole }: Props) {
 
   const handleDisable = async (id: string) => {
     try {
-      await axiosInstance.delete(`${getApiBaseUrl()}/users/${id}`, {
+      await axiosInstance.delete(`/users/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       fetchData();
