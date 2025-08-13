@@ -1,11 +1,13 @@
 'use client';
 
 import { useForm } from 'react-hook-form';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Document } from '@/interfaces/Document';
 import ProjectField from '@/interfaces/ProjectField';
 import { Button } from '@/components/ui/button';
+import axiosInstance from '@/lib/axios';
+import Cookies from 'js-cookie';
 
 interface Props {
   fields: ProjectField[];
@@ -14,6 +16,8 @@ interface Props {
 
 export default function DocumentFormClient({ fields, initialData = {} }: Props) {
   const router = useRouter();
+
+  const [submitting, setSubmitting] = useState(false);
 
   const {
     register,
@@ -32,22 +36,35 @@ export default function DocumentFormClient({ fields, initialData = {} }: Props) 
   }, [initialData, reset]);
 
   const onSubmit = async (formValues: any) => {
-    const documentField: Record<string, string> = {};
-    fields.forEach((field) => {
-      console.log(`field: ${JSON.stringify(field)}`);
-      documentField[field.fieldCode] = formValues[field.fieldCode];
-    });
-
-    const payload = {
-      ...initialData,
-      ...formValues,
-      documentField,
-    };
-
-    console.log('Submit Payload:', payload);
-
-    // TODO: Replace with real API call
-    router.push('/documents');
+    const token = Cookies.get('sempoa');
+    setSubmitting(true);
+    try {
+      const documentField: Record<string, string> = {};
+      fields.forEach((field) => {
+        console.log(`field: ${JSON.stringify(field)}`);
+        documentField[field.fieldCode] = formValues[field.fieldCode];
+      });
+    
+      const payload = {
+        ...initialData,
+        ...formValues,
+        documentField,
+      };
+    
+      console.log('Submit Payload:', payload);
+    
+      const res = await axiosInstance.post('/documents', payload, {
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+      });
+    
+      console.log('Create document response:', res?.data);
+      router.push('/documents');
+    } catch (e: any) {
+      console.error('Failed to create document:', e?.response?.data ?? e?.message ?? e);
+      alert(e?.response?.data?.message ?? e?.message ?? 'Failed to create document');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -120,7 +137,7 @@ export default function DocumentFormClient({ fields, initialData = {} }: Props) 
         <div>
           <label className="block font-medium mb-1">File ID</label>
           <input
-            {...register('fileId', { required: true })}
+            {...register('fileId', { required: false })}
             className="input w-full"
           />
           {errors.fileId && <span className="text-red-500 text-sm">Required</span>}
@@ -136,7 +153,7 @@ export default function DocumentFormClient({ fields, initialData = {} }: Props) 
           <Button type="button" onClick={() => router.back()} variant="ghost">
             Cancel
           </Button>
-          <Button type="submit">{initialData?.id ? 'Update' : 'Create'}</Button>
+          <Button type="submit" disabled={submitting}>{submitting ? 'Saving…' : (initialData?.id ? 'Update' : 'Create')}</Button>
         </div>
       </form>
     </div>

@@ -5,10 +5,12 @@ import { useRouter } from 'next/navigation';
 import { Menu } from '@headlessui/react'; // For the dropdown functionality
 import { ChevronDown, User, LogOut, Settings, Lock } from 'lucide-react'; // Icons
 import CurrentProjectSelect from './CurrentProjectSelect';
-import UserObj from '@/interfaces/User';
 
 interface TopBarProps {
-  user: UserObj | null;
+  user?: {
+    id: string;
+    currentProjectId?: string | null;
+  }
 }
 
 const TopBar = ({ user }: TopBarProps) => {
@@ -16,8 +18,8 @@ const TopBar = ({ user }: TopBarProps) => {
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
 
   const handleSignOut = () => {
-    // Clear the token and redirect
-    document.cookie = 'authToken=; Max-Age=0; path=/;'; // Clear token
+    document.cookie = 'sempoa=; Max-Age=0; path=/;';
+    document.cookie = 'authToken=; Max-Age=0; path=/;'; // if this exists anywhere
     router.push('/login');
   };
 
@@ -54,7 +56,6 @@ const TopBar = ({ user }: TopBarProps) => {
         <CurrentProjectSelect
           value={user?.currentProjectId}
           allowClear
-          onChanged={(p) => console.log("changed to", p)}
         />
 
         {/* Navigation */}

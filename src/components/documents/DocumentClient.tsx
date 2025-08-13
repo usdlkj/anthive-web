@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Document } from '@/interfaces/Document';
 import ProjectField from '@/interfaces/ProjectField';
-import { DocumentTable } from '@/components/tables/DocumentTable';
+import { DocumentTable } from '@/components/documents/DocumentTable';
 
 interface Props {
   documents: Document[];

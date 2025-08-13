@@ -18,7 +18,6 @@ async function fetchData(companyId: string) {
       headers: { Authorization: `Bearer ${token}` }
     });
 
-    console.log(`res: ${JSON.stringify(res.data)}`);
     const json: DatatableProps<User, unknown> = res.data;
     return {
       data: json.data,
