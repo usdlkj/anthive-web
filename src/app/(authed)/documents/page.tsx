@@ -19,7 +19,7 @@ async function fetchData(userId: string) {
     });
     const user = res.data as User;
     const [docRes, fieldRes] = await Promise.all([
-      axiosInstance.get(`${getApiBaseUrl()}/documents?companyId=01K1MG4N1XYG8V9HTD2WT03TF3&currentPage=1&pageSize=10`, {
+      axiosInstance.get(`${getApiBaseUrl()}/documents?companyId=${user.companyId}&currentPage=1&pageSize=20`, {
         headers: { Authorization: `Bearer ${token}` }
       }),
       axiosInstance.get(`${getApiBaseUrl()}/project-fields?projectId=${user.currentProjectId}`, {

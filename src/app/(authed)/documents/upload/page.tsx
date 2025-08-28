@@ -22,7 +22,10 @@ export default async function DocumentCreatePage() {
   return (
     <DocumentFormClient
       fields={fieldRes.data.data}
-      initialData={{}} // or document data if editing
+      initialData={{
+        projectId: user.currentProjectId,
+        companyId: user.companyId,
+      }} // or document data if editing
     />
   );
 }

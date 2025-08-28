@@ -26,5 +26,5 @@ export interface Document {
   updatedAt: string;
   deletedAt?: string;
 
-  documentField?: Record<string, string>; // key-value map of custom fields
+  fieldMap?: Record<string, string>; // key-value map of custom fields
 }
