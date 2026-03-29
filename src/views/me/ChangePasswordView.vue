@@ -11,7 +11,7 @@ async function submit() {
   if (form.value.newPassword !== form.value.confirmPassword) { toast.error('Passwords do not match'); return }
   saving.value = true
   try {
-    await axiosInstance.patch('/change-password', { currentPassword: form.value.currentPassword, newPassword: form.value.newPassword })
+    await axiosInstance.patch('/auth/change-password', { currentPassword: form.value.currentPassword, newPassword: form.value.newPassword })
     toast.success('Password changed')
     form.value = { currentPassword: '', newPassword: '', confirmPassword: '' }
   } catch (e: any) {
